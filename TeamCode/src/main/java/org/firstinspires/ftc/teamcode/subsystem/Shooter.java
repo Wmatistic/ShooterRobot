@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
+import com.arcrobotics.ftclib.command.Robot;
 import com.arcrobotics.ftclib.command.Subsystem;
 
 import org.firstinspires.ftc.teamcode.util.RobotConstants;
@@ -33,18 +34,27 @@ public class Shooter implements Subsystem {
     public void periodic() {
         switch (shooterState) {
             case STOWED:
-
+                setFlywheelVelocity(0);
+                setHoodPosition(RobotConstants.Shooter.hoodStowed);
+                setTurretTarget(RobotConstants.Shooter.turretStowed);
                 break;
 
             case FIRING:
             case AIMING:
-
                 // TODO: maybe condense into something like Aim() method
                 shooterControl.aimAndSpin();
 
                 updateTurret();
                 break;
         }
+    }
+
+    public void setShooterState(ShooterState shooterState) {
+        this.shooterState = shooterState;
+    }
+
+    public ShooterState getShooterState() {
+        return shooterState;
     }
 
     public void setFlywheelVelocity(double ticksPerSecond) {

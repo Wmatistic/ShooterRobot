@@ -12,7 +12,7 @@ public class ShooterControl {
     private final RobotHardware robot;
     private final ShooterLUT lut;
     private double distanceToGoal;
-    private double turretGoal;
+    private double turretToGoal;
 
     public ShooterControl() {
         this.robot = RobotHardware.getInstance();
@@ -23,25 +23,27 @@ public class ShooterControl {
         distanceToGoal = findDistanceToGoal();
         ShotConfig config = lut.getForDistance(distanceToGoal);
         double ticksPerSecond = config.rpm * RobotConstants.Shooter.TICKS_PER_REV / 60.0;
-        turretGoal = findTurretGoal();
+        turretToGoal = findTurretToGoal();
 
         robot.shooter.setFlywheelVelocity(ticksPerSecond);
         robot.shooter.setHoodPosition(config.hoodPos);
-        robot.shooter.setTurretTarget(turretGoal);
+        robot.shooter.setTurretTarget(turretToGoal);
         robot.shooter.setTurretOffset(config.turretOffset);
     }
 
     public double findDistanceToGoal() {
         Pose2d goalPos = RobotConstants.RobotLocalization.goalPos;
-        Pose2d robotPose = robot.robotLocalization.robotPose;
+        Pose2d robotPose = robot.robotLocalization.getRobotPose();
+
         double dx = goalPos.position.x - robotPose.position.x;
         double dy = goalPos.position.y - robotPose.position.y;
+
         return Math.hypot(dx, dy);
     }
 
-    public double findTurretGoal() {
+    public double findTurretToGoal() {
         Pose2d goalPos = RobotConstants.RobotLocalization.goalPos;
-        Pose2d robotPose = robot.robotLocalization.robotPose;
+        Pose2d robotPose = robot.robotLocalization.getRobotPose();
 
         double dx = goalPos.position.x - robotPose.position.x;
         double dy = goalPos.position.y - robotPose.position.y;

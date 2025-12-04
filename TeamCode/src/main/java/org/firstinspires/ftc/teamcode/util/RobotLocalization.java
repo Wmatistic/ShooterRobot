@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 public class RobotLocalization {
     private final RobotHardware robot;
 
-    public Pose2d robotPose;
+    Pose2d robotPose;
 
     // Limelight
     LLResult result;
@@ -46,5 +46,9 @@ public class RobotLocalization {
 
     public void setPinpointPose() {
         pinpointPose = new Pose2d(robot.pinpointDrive.pinpoint.getPosition().getX(DistanceUnit.INCH), robot.pinpointDrive.pinpoint.getPosition().getY(DistanceUnit.INCH), robot.pinpointDrive.pinpoint.getHeading());
+    }
+
+    public Pose2d getRobotPose() {
+        return robotPose;
     }
 }

@@ -35,6 +35,8 @@ public class RobotConstants {
         public static double turretI = 0.0;
         public static double turretD = 0.0;
         public static double turretF = 0.0;
+
+        public static double hoodStowed = 0.0;
     }
 
     @Config
