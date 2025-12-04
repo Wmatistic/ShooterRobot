@@ -40,6 +40,32 @@ public class RobotConstants {
     }
 
     @Config
+    public static class Intake {
+        public static String intakeMotor = "intakeMotor";
+
+        public static double intakePower = 0.5;
+        public static double intakeOff = 0.0;
+    }
+
+    @Config
+    public static class Indexer {
+        public static String frontLeftSensor = "frontLeftSensor";
+        public static String frontRightSensor = "frontRightSensor";
+        public static String middleLeftSensor = "frontLeftSensor";
+        public static String middleRightSensor = "middleRightSensor";
+        public static String rearLeftSensor = "rearLeftSensor";
+        public static String rearRightSensor = "rearRightSensor";
+        public static String frontServo = "frontServo";
+        public static String middleServo = "middleServo";
+        public static String rearServo = "rearServo";
+
+        public static double proximityThreshold = 25.0;
+
+        public static double indexerServoStowed = 0.0;
+        public static double indexerServoUp = 0.5;
+    }
+
+    @Config
     public static class RobotLocalization {
         public static Pose2d start = new Pose2d(0, 0, Math.toRadians(0));
 
