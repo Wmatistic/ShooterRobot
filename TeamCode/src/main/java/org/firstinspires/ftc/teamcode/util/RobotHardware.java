@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.util;
 
 
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,7 +11,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.robot.Robot;
+
+import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 
 public class RobotHardware {
 
@@ -23,6 +24,9 @@ public class RobotHardware {
     public DcMotorEx shooterMotorLeft, shooterMotorRight, turretMotor;
     public Servo shooterServoLeft, shooterServoRight;
     public AnalogInput turretServoInput;
+    public PIDFController turretPID;
+
+    public Shooter shooter;
 
     private HardwareMap hardwareMap;
     private static RobotHardware instance = null;
@@ -68,12 +72,12 @@ public class RobotHardware {
         shooterMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         shooterMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterMotorLeft.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(RobotConstants.Shooter.p, RobotConstants.Shooter.i, RobotConstants.Shooter.d, RobotConstants.Shooter.f));
+        shooterMotorLeft.setVelocityPIDFCoefficients(RobotConstants.Shooter.flywheelP, RobotConstants.Shooter.flywheelI, RobotConstants.Shooter.flywheelD, RobotConstants.Shooter.flywheelF);
 
         shooterMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         shooterMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         shooterMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterMotorRight.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(RobotConstants.Shooter.p, RobotConstants.Shooter.i, RobotConstants.Shooter.d, RobotConstants.Shooter.f));
+        shooterMotorRight.setVelocityPIDFCoefficients(RobotConstants.Shooter.flywheelP, RobotConstants.Shooter.flywheelI, RobotConstants.Shooter.flywheelD, RobotConstants.Shooter.flywheelF);
 
         shooterMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -82,6 +86,7 @@ public class RobotHardware {
 
         turretMotor = hardwareMap.get(DcMotorEx.class, RobotConstants.Shooter.turretMotor);
         turretServoInput = hardwareMap.get(AnalogInput.class, RobotConstants.Shooter.turretServoInput);
+        turretPID = new PIDFController(RobotConstants.Shooter.turretP, RobotConstants.Shooter.turretI, RobotConstants.Shooter.turretD, RobotConstants.Shooter.turretF);
 
     }
 }
