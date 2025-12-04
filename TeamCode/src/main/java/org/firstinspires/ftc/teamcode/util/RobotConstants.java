@@ -40,5 +40,7 @@ public class RobotConstants {
     @Config
     public static class RobotLocalization {
         public static Pose2d start = new Pose2d(0, 0, Math.toRadians(0));
+
+        public static Pose2d goalPos = new Pose2d(20, 20, 0);
     }
 }

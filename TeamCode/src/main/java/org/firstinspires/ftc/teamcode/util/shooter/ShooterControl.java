@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.util.shooter;
 
+import com.acmerobotics.roadrunner.Pose2d;
+
 import org.firstinspires.ftc.teamcode.util.RobotConstants;
 import org.firstinspires.ftc.teamcode.util.RobotHardware;
 
@@ -9,7 +11,7 @@ public class ShooterControl {
     //  * calculate angle for turret to face the goal
     private final RobotHardware robot;
     private final ShooterLUT lut;
-    private double distanceToTarget;
+    private double distanceToGoal;
     private double turretGoal;
 
     public ShooterControl() {
@@ -18,8 +20,10 @@ public class ShooterControl {
     }
 
     public void aimAndSpin() {
-        ShotConfig config = lut.getForDistance(distanceToTarget);
+        distanceToGoal = findDistanceToGoal();
+        ShotConfig config = lut.getForDistance(distanceToGoal);
         double ticksPerSecond = config.rpm * RobotConstants.Shooter.TICKS_PER_REV / 60.0;
+        turretGoal = findTurretGoal();
 
         robot.shooter.setFlywheelVelocity(ticksPerSecond);
         robot.shooter.setHoodPosition(config.hoodPos);
@@ -27,7 +31,31 @@ public class ShooterControl {
         robot.shooter.setTurretOffset(config.turretOffset);
     }
 
-    public void findTurretGoal() {
-        
+    public double findDistanceToGoal() {
+        Pose2d goalPos = RobotConstants.RobotLocalization.goalPos;
+        Pose2d robotPose = robot.robotLocalization.robotPose;
+        double dx = goalPos.position.x - robotPose.position.x;
+        double dy = goalPos.position.y - robotPose.position.y;
+        return Math.hypot(dx, dy);
+    }
+
+    public double findTurretGoal() {
+        Pose2d goalPos = RobotConstants.RobotLocalization.goalPos;
+        Pose2d robotPose = robot.robotLocalization.robotPose;
+
+        double dx = goalPos.position.x - robotPose.position.x;
+        double dy = goalPos.position.y - robotPose.position.y;
+
+        double targetAngle = Math.atan2(dy, dx);
+
+        double turretAngle = targetAngle - robotPose.heading.imag;
+
+        return normalizeAngle(turretAngle);
+    }
+
+    public static double normalizeAngle(double angle) {
+        while (angle > Math.PI) angle -= 2 * Math.PI;
+        while (angle < -Math.PI) angle += 2 * Math.PI;
+        return angle;
     }
 }
