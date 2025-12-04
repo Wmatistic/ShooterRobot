@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.util;
 
 
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,6 +13,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.roadrunner.PinpointDrive;
+import org.firstinspires.ftc.teamcode.subsystem.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 
 public class RobotHardware {
@@ -26,7 +29,16 @@ public class RobotHardware {
     public AnalogInput turretServoInput;
     public PIDFController turretPID;
 
+    // ----- LIMELIGHT -----
+    public Limelight3A limelight;
+
+    // ----- PINPOINT -----
+    public PinpointDrive pinpointDrive;
+
+    // ----- SUBSYSTEMS -----
+    public Drivetrain drivetrain;
     public Shooter shooter;
+    public RobotLocalization robotLocalization;
 
     private HardwareMap hardwareMap;
     private static RobotHardware instance = null;
@@ -88,5 +100,22 @@ public class RobotHardware {
         turretServoInput = hardwareMap.get(AnalogInput.class, RobotConstants.Shooter.turretServoInput);
         turretPID = new PIDFController(RobotConstants.Shooter.turretP, RobotConstants.Shooter.turretI, RobotConstants.Shooter.turretD, RobotConstants.Shooter.turretF);
 
+        // ******************* LIMELIGHT / PINPOINT *******************
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(100);
+        limelight.pipelineSwitch(0);
+
+        pinpointDrive = new PinpointDrive(hardwareMap, RobotConstants.RobotLocalization.start);
+
+        // ******************* INITIALIZE SUBSYSTEMS *******************
+        robotLocalization = new RobotLocalization();
+        shooter = new Shooter();
+        drivetrain = new Drivetrain();
+    }
+
+    public void periodic() {
+        drivetrain.periodic();
+        robotLocalization.periodic();
+        shooter.periodic();
     }
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Pose2d;
 
 public class RobotConstants {
 
@@ -34,5 +35,10 @@ public class RobotConstants {
         public static double turretI = 0.0;
         public static double turretD = 0.0;
         public static double turretF = 0.0;
+    }
+
+    @Config
+    public static class RobotLocalization {
+        public static Pose2d start = new Pose2d(0, 0, Math.toRadians(0));
     }
 }

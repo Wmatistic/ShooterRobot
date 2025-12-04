@@ -43,7 +43,6 @@ public class Shooter implements Subsystem {
                 shooterControl.aimAndSpin();
 
                 updateTurret();
-
                 break;
         }
     }
