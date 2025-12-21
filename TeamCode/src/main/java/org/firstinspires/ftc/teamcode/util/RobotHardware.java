@@ -40,7 +40,7 @@ public class RobotHardware {
     public Servo frontServo, middleServo, rearServo;
 
     // ----- LIMELIGHT -----
-    public Limelight3A limelight;
+    //public Limelight3A limelight;
 
     // ----- PINPOINT -----
     public PinpointDrive pinpointDrive;
@@ -135,9 +135,11 @@ public class RobotHardware {
         rearServo.setPosition(RobotConstants.Indexer.indexerServoStowed);
 
         // ******************* LIMELIGHT / PINPOINT *******************
+        /*
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
+         */
 
         pinpointDrive = new PinpointDrive(hardwareMap, RobotConstants.RobotLocalization.start);
 

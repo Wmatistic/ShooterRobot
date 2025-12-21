@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 import org.firstinspires.ftc.teamcode.util.RobotHardware;
 
@@ -25,7 +26,7 @@ public class Lebot extends CommandOpMode {
         robot.init(hardwareMap);
         robot.drivetrain.setDriver(driver);
 
-        robot.limelight.start();
+        //robot.limelight.start();
     }
 
     @Override
@@ -41,5 +42,13 @@ public class Lebot extends CommandOpMode {
         if (driver.wasJustPressed(GamepadKeys.Button.B)) {
             robot.shooter.setShooterState(Shooter.ShooterState.STOWED);
         }
+
+        if (driver.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+            robot.intake.setIntakeState(Intake.IntakeState.INTAKING);
+        } else {
+            robot.intake.setIntakeState(Intake.IntakeState.STOWED);
+        }
+
+
     }
 }

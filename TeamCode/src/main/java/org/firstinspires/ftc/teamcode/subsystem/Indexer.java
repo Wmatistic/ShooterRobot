@@ -108,6 +108,19 @@ public class Indexer implements Subsystem {
         );
     }
 
+    public void moveIndexerSlotServo(SlotID slotID, double position) {
+        switch (slotID) {
+            case FRONT:
+                robot.frontServo.setPosition(position);
+                break;
+            case MIDDLE:
+                robot.middleServo.setPosition(position);
+                break;
+            case REAR:
+                robot.rearServo.setPosition(position);
+        }
+    }
+
     public IndexerSlot getIndexerSlot(SlotID slotID) {
         return indexerSlots[slotID.ordinal()];
     }
