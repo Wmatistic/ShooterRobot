@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.util;
 
 
+import com.arcrobotics.ftclib.command.Robot;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -40,7 +43,7 @@ public class RobotHardware {
     public Servo frontServo, middleServo, rearServo;
 
     // ----- LIMELIGHT -----
-    //public Limelight3A limelight;
+    public Limelight3A limelight;
 
     // ----- PINPOINT -----
     public PinpointDrive pinpointDrive;
@@ -100,15 +103,18 @@ public class RobotHardware {
 
         shooterMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         shooterMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooterMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotorRight.setVelocityPIDFCoefficients(RobotConstants.Shooter.flywheelP, RobotConstants.Shooter.flywheelI, RobotConstants.Shooter.flywheelD, RobotConstants.Shooter.flywheelF);
 
-        shooterMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         shooterServoLeft = hardwareMap.servo.get(RobotConstants.Shooter.shooterServoLeft);
+        shooterServoLeft.setPosition(RobotConstants.Shooter.hoodStowed);
         shooterServoRight = hardwareMap.servo.get(RobotConstants.Shooter.shooterServoRight);
+        shooterServoRight.setPosition(RobotConstants.Shooter.hoodStowed);
 
         turretMotor = hardwareMap.get(DcMotorEx.class, RobotConstants.Shooter.turretMotor);
+        turretMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         turretServoInput = hardwareMap.get(AnalogInput.class, RobotConstants.Shooter.turretServoInput);
         turretPID = new PIDFController(RobotConstants.Shooter.turretP, RobotConstants.Shooter.turretI, RobotConstants.Shooter.turretD, RobotConstants.Shooter.turretF);
 
@@ -118,21 +124,21 @@ public class RobotHardware {
         intakeMotor.setPower(0);
 
         // ******************* INDEXER *******************
-        frontLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.frontLeftSensor);
-        frontRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.frontRightSensor);
-        middleLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.middleLeftSensor);
-        middleRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.middleRightSensor);
-        rearLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.rearLeftSensor);
-        rearRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.rearRightSensor);
+//        frontLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.frontLeftSensor);
+//        frontRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.frontRightSensor);
+//        middleLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.middleLeftSensor);
+//        middleRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.middleRightSensor);
+//        rearLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.rearLeftSensor);
+//        rearRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.rearRightSensor);
 
         frontServo = hardwareMap.servo.get(RobotConstants.Indexer.frontServo);
-        frontServo.setPosition(RobotConstants.Indexer.indexerServoStowed);
+        frontServo.setPosition(RobotConstants.Indexer.frontIndexerServoStowed);
 
         middleServo = hardwareMap.servo.get(RobotConstants.Indexer.middleServo);
-        middleServo.setPosition(RobotConstants.Indexer.indexerServoStowed);
+        middleServo.setPosition(RobotConstants.Indexer.middleIndexerServoStowed);
 
         rearServo = hardwareMap.servo.get(RobotConstants.Indexer.rearServo);
-        rearServo.setPosition(RobotConstants.Indexer.indexerServoStowed);
+        rearServo.setPosition(RobotConstants.Indexer.rearIndexerServoStowed);
 
         // ******************* LIMELIGHT / PINPOINT *******************
         /*

@@ -22,10 +22,9 @@ public class ShooterControl {
     public void aimAndSpin() {
         distanceToGoal = findDistanceToGoal();
         ShotConfig config = lut.getForDistance(distanceToGoal);
-        double ticksPerSecond = config.rpm * RobotConstants.Shooter.TICKS_PER_REV / 60.0;
         turretToGoal = findTurretToGoal();
 
-        robot.shooter.setFlywheelVelocity(ticksPerSecond);
+        robot.shooter.setFlywheelVelocity(config.rpm);
         robot.shooter.setHoodPosition(config.hoodPos);
         robot.shooter.setTurretTarget(turretToGoal);
         robot.shooter.setTurretOffset(config.turretOffset);
@@ -50,9 +49,9 @@ public class ShooterControl {
 
         double targetAngle = Math.atan2(dy, dx);
 
-        double turretAngle = targetAngle - robotPose.heading.imag;
+        double turretAngle = targetAngle - robotPose.heading.log();
 
-        return normalizeAngle(turretAngle);
+        return (((normalizeAngle(turretAngle) / Math.PI) + 1) / 2.0) + RobotConstants.Shooter.turretOffset;
     }
 
     public static double normalizeAngle(double angle) {

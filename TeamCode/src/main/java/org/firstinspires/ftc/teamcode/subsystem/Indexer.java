@@ -121,6 +121,32 @@ public class Indexer implements Subsystem {
         }
     }
 
+    public double getIndexerServoStowedPosition(SlotID slotID) {
+        switch (slotID) {
+            case FRONT:
+                return RobotConstants.Indexer.frontIndexerServoStowed;
+            case MIDDLE:
+                return RobotConstants.Indexer.middleIndexerServoStowed;
+            case REAR:
+                return RobotConstants.Indexer.rearIndexerServoStowed;
+            default:
+                return RobotConstants.Indexer.indexerServoStowed;
+        }
+    }
+
+    public double getIndexerServoUpPosition(SlotID slotID) {
+        switch (slotID) {
+            case FRONT:
+                return RobotConstants.Indexer.frontIndexerServoUp;
+            case MIDDLE:
+                return RobotConstants.Indexer.middleIndexerServoUp;
+            case REAR:
+                return RobotConstants.Indexer.rearIndexerServoUp;
+            default:
+                return RobotConstants.Indexer.indexerServoUp;
+        }
+    }
+
     public IndexerSlot getIndexerSlot(SlotID slotID) {
         return indexerSlots[slotID.ordinal()];
     }

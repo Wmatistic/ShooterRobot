@@ -10,7 +10,7 @@ public class Intake implements Subsystem {
 
     private IntakeState intakeState;
     public enum IntakeState {
-        INTAKING, STOWED
+        INTAKING, STOWED, REVERSED
     }
 
     public Intake() {
@@ -30,6 +30,9 @@ public class Intake implements Subsystem {
             case STOWED:
                 setIntakeMotorPower(RobotConstants.Intake.intakeOff);
                 break;
+
+            case REVERSED:
+                setIntakeMotorPower(RobotConstants.Intake.intakeReverse);
         }
     }
 

@@ -26,7 +26,7 @@ public class RobotLocalization {
     }
 
     public void periodic() {
-        setLimelightPose();
+        //setLimelightPose();
         setPinpointPose();
 
         // TODO: average the two poses somehow when limelight pose is valid
@@ -45,6 +45,7 @@ public class RobotLocalization {
     }
 
     public void setPinpointPose() {
+        robot.pinpointDrive.updatePoseEstimate();
         pinpointPose = new Pose2d(robot.pinpointDrive.pinpoint.getPosition().getX(DistanceUnit.INCH), robot.pinpointDrive.pinpoint.getPosition().getY(DistanceUnit.INCH), robot.pinpointDrive.pinpoint.getHeading());
     }
 

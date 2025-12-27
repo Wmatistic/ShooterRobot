@@ -10,8 +10,11 @@ public class ShooterLUT {
     public ShooterLUT() {
         // TODO: add / tune values
         // distance, rpm, hood servo position, turret offset
-        table.put(10.0, new ShotConfig(1800, 0.32, 0.0));
-        table.put(12.0, new ShotConfig(2000, 0.38, 0.0));
+        table.put(170.0, new ShotConfig(1600, 0.8, 0.0));
+        table.put(134.0, new ShotConfig(1400, 0.8, 0.0));
+        table.put(93.0, new ShotConfig(1200, 0.8, 0.0));
+        table.put(75.0, new ShotConfig(1100, 0.6, 0.0));
+        table.put(27.0, new ShotConfig(900, 0.1, 0.0));
     }
 
     public ShotConfig getForDistance(double d) {
