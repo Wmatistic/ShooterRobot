@@ -13,14 +13,15 @@ public class Shooter implements Subsystem {
 
     private ShooterState shooterState;
     public enum ShooterState {
-        STOWED, AIMING, FIRING
+        STOWED, AIMING, FIRING, FULL_SPEED, HUMAN_PLAYER
     }
 
     private double turretTarget;
+    private double prevTurretPosition, turretTurns;
     private double turretOffset;
 
-    private double localFarShotHood = 0.8;
-    private int localFarShotRPM = 1500;
+    private double localFarShotHood = 0.0;
+    private double localFarShotRPM = 0.0;
 
     public Shooter() {
         this.robot = RobotHardware.getInstance();
@@ -31,26 +32,42 @@ public class Shooter implements Subsystem {
 
         turretTarget = RobotConstants.Shooter.turretStowed;
         turretOffset = 0.0;
+
+        prevTurretPosition = getRealTurretPosition();
+        turretTurns = 0.0;
     }
 
     public void periodic() {
         switch (shooterState) {
             case STOWED:
-                //setFlywheelVelocity(0);
+                setFlywheelVelocity(0.0);
+                robot.flywheel.stopMotor();
                 setHoodPosition(RobotConstants.Shooter.hoodStowed);
                 setTurretTarget(RobotConstants.Shooter.turretStowed);
+                updateTurret();
                 break;
 
             case FIRING:
             case AIMING:
-                // TODO: maybe condense into something like Aim() method
-                shooterControl.aimAndSpin();
+                shooterControl.aimAndSpinSOTM();
 //                setTurretTarget(shooterControl.findTurretToGoal());
 //                setHoodPosition(localFarShotHood);
 //                setFlywheelVelocity(localFarShotRPM);
 
                 updateTurret();
                 break;
+            case FULL_SPEED:
+                robot.flywheel.set(1.0);
+                setHoodPosition(RobotConstants.Shooter.hoodMaxAngle);
+                setTurretTarget(RobotConstants.Shooter.turretStowed);
+                updateTurret();
+                break;
+            case HUMAN_PLAYER:
+                robot.flywheel.set(RobotConstants.Shooter.flywheelHumanPlayer);
+                setHoodPosition(RobotConstants.Shooter.hoodStowed);
+                setTurretTarget(RobotConstants.Shooter.turretStowed);
+                updateTurret();
+                 break;
         }
     }
 
@@ -63,8 +80,11 @@ public class Shooter implements Subsystem {
     }
 
     public void setFlywheelVelocity(double ticksPerSecond) {
-        robot.shooterMotorLeft.setVelocity(ticksPerSecond);
-        robot.shooterMotorRight.setVelocity(ticksPerSecond);
+        if (Double.isFinite(ticksPerSecond)) {
+            robot.flywheel.set(ticksPerSecond);
+        }
+        //robot.shooterMotorLeft.setVelocity(ticksPerSecond);
+        //robot.shooterMotorRight.setVelocity(ticksPerSecond);
     }
 
     public void setHoodPosition(double hoodPosition) {
@@ -94,6 +114,20 @@ public class Shooter implements Subsystem {
     }
 
     public double getTurretPosition() {
+        double position = getRealTurretPosition();
+
+        if (prevTurretPosition - position > 0.5) {
+            turretTurns++;
+        } else if (prevTurretPosition - position < -0.5) {
+            turretTurns--;
+        }
+
+        prevTurretPosition = position;
+
+        return position + turretTurns;
+    }
+
+    public double getRealTurretPosition() {
         return robot.turretServoInput.getVoltage() / 3.3;
     }
 
@@ -112,14 +146,14 @@ public class Shooter implements Subsystem {
     public void changeFarShotHood(double value) {
         localFarShotHood += value;
     }
-    public void changeFarShotRPM(int value) {
+    public void changeFarShotRPM(double value) {
         localFarShotRPM += value;
     }
 
     public double getLocalFarShotHood() {
         return localFarShotHood;
     }
-    public int getLocalFarShotRPM() {
+    public double getLocalFarShotRPM() {
         return localFarShotRPM;
     }
 }

@@ -31,6 +31,8 @@ public class RobotHardware {
 
     // ----- SHOOTER -----
     public DcMotorEx shooterMotorLeft, shooterMotorRight, turretMotor;
+    public Motor shooterLeft, shooterRight;
+    public MotorGroup flywheel;
     public Servo shooterServoLeft, shooterServoRight;
     public AnalogInput turretServoInput;
     public PIDFController turretPID;
@@ -93,20 +95,36 @@ public class RobotHardware {
         imu.resetYaw();
 
         // ******************* SHOOTER *******************
-        shooterMotorLeft = hardwareMap.get(DcMotorEx.class, RobotConstants.Shooter.shooterMotorLeft);
-        shooterMotorRight = hardwareMap.get(DcMotorEx.class, RobotConstants.Shooter.shooterMotorRight);
+        shooterLeft = new Motor(hardwareMap, RobotConstants.Shooter.shooterMotorLeft, Motor.GoBILDA.BARE);
+        shooterRight = new Motor(hardwareMap, RobotConstants.Shooter.shooterMotorRight, Motor.GoBILDA.BARE);
+        shooterLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        shooterRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 
-        shooterMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        shooterMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooterMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterMotorLeft.setVelocityPIDFCoefficients(RobotConstants.Shooter.flywheelP, RobotConstants.Shooter.flywheelI, RobotConstants.Shooter.flywheelD, RobotConstants.Shooter.flywheelF);
+        shooterRight.setInverted(true);
 
-        shooterMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        shooterMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooterMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooterMotorRight.setVelocityPIDFCoefficients(RobotConstants.Shooter.flywheelP, RobotConstants.Shooter.flywheelI, RobotConstants.Shooter.flywheelD, RobotConstants.Shooter.flywheelF);
+        flywheel = new MotorGroup(
+            shooterRight,
+            shooterLeft
+        );
 
-        shooterMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        flywheel.setRunMode(Motor.RunMode.VelocityControl);
+        flywheel.setVeloCoefficients(RobotConstants.Shooter.flywheelP, 0, 0);
+        flywheel.setFeedforwardCoefficients(0, 0.0);
+
+//        shooterMotorLeft = hardwareMap.get(DcMotorEx.class, RobotConstants.Shooter.shooterMotorLeft);
+//        shooterMotorRight = hardwareMap.get(DcMotorEx.class, RobotConstants.Shooter.shooterMotorRight);
+//
+//        shooterMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        shooterMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        shooterMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        shooterMotorLeft.setVelocityPIDFCoefficients(RobotConstants.Shooter.flywheelP, RobotConstants.Shooter.flywheelI, RobotConstants.Shooter.flywheelD, RobotConstants.Shooter.flywheelF);
+//
+//        shooterMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        shooterMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        shooterMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        shooterMotorRight.setVelocityPIDFCoefficients(RobotConstants.Shooter.flywheelP, RobotConstants.Shooter.flywheelI, RobotConstants.Shooter.flywheelD, RobotConstants.Shooter.flywheelF);
+//
+//        shooterMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         shooterServoLeft = hardwareMap.servo.get(RobotConstants.Shooter.shooterServoLeft);
         shooterServoLeft.setPosition(RobotConstants.Shooter.hoodStowed);
@@ -124,12 +142,12 @@ public class RobotHardware {
         intakeMotor.setPower(0);
 
         // ******************* INDEXER *******************
-//        frontLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.frontLeftSensor);
-//        frontRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.frontRightSensor);
-//        middleLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.middleLeftSensor);
-//        middleRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.middleRightSensor);
-//        rearLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.rearLeftSensor);
-//        rearRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.rearRightSensor);
+        frontLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.frontLeftSensor);
+        frontRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.frontRightSensor);
+        middleLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.middleLeftSensor);
+        middleRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.middleRightSensor);
+        rearLeftSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.rearLeftSensor);
+        rearRightSensor = hardwareMap.get(RevColorSensorV3.class, RobotConstants.Indexer.rearRightSensor);
 
         frontServo = hardwareMap.servo.get(RobotConstants.Indexer.frontServo);
         frontServo.setPosition(RobotConstants.Indexer.frontIndexerServoStowed);
@@ -141,11 +159,9 @@ public class RobotHardware {
         rearServo.setPosition(RobotConstants.Indexer.rearIndexerServoStowed);
 
         // ******************* LIMELIGHT / PINPOINT *******************
-        /*
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
-         */
 
         pinpointDrive = new PinpointDrive(hardwareMap, RobotConstants.RobotLocalization.start);
 
@@ -159,6 +175,12 @@ public class RobotHardware {
 
     public void periodic() {
         drivetrain.periodic();
+        robotLocalization.periodic();
+        shooter.periodic();
+        indexer.periodic();
+    }
+
+    public void autoPeriodic() {
         robotLocalization.periodic();
         shooter.periodic();
     }

@@ -15,10 +15,19 @@ public class Indexer implements Subsystem {
         NONE
     }
 
+    private enum WhichSensor {
+        A,
+        B,
+        NONE
+    };
+
     public class IndexerSlot {
         private final RevColorSensorV3 sensorA, sensorB;
         public boolean occupied;
         public BallColor color;
+
+        private boolean colorLatched = false;
+        private WhichSensor latchedSensor = WhichSensor.NONE;
 
         public IndexerSlot(boolean occupied, BallColor color, RevColorSensorV3 sensorA, RevColorSensorV3 sensorB) {
             this.occupied = occupied;
@@ -34,19 +43,35 @@ public class Indexer implements Subsystem {
             boolean closeA = dA < RobotConstants.Indexer.proximityThreshold;
             boolean closeB = dB < RobotConstants.Indexer.proximityThreshold;
 
-            if (closeA) {
-                BallColor colorA = classifyColor(sensorA);
-
-                occupied = true;
-                color = colorA;
-            } else if (closeB) {
-                BallColor colorB = classifyColor(sensorB);
-
-                occupied = true;
-                color = colorB;
-            } else {
+            if (!closeA && !closeB) {
                 occupied = false;
                 color = BallColor.NONE;
+                colorLatched = false;
+                latchedSensor = WhichSensor.NONE;
+                return;
+            }
+
+            // Ball present
+            occupied = true;
+
+            WhichSensor seeing;
+            if (latchedSensor == WhichSensor.A && closeA) {
+                seeing = WhichSensor.A;
+            } else if (latchedSensor == WhichSensor.B && closeB) {
+                seeing = WhichSensor.B;
+            } else {
+                if (closeA && closeB) {
+                    seeing = (dA <= dB) ? WhichSensor.A : WhichSensor.B;
+                } else {
+                    seeing = closeA ? WhichSensor.A : WhichSensor.B;
+                }
+            }
+
+            if (!colorLatched) {
+                RevColorSensorV3 s = (seeing == WhichSensor.A) ? sensorA : sensorB;
+                color = classifyColor(s);
+                colorLatched = true;
+                latchedSensor = seeing;
             }
         }
 
@@ -106,6 +131,11 @@ public class Indexer implements Subsystem {
                 robot.rearLeftSensor,
                 robot.rearRightSensor
         );
+    }
+
+    @Override
+    public void periodic() {
+        checkIndexerSlots();
     }
 
     public void moveIndexerSlotServo(SlotID slotID, double position) {
