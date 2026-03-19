@@ -31,7 +31,12 @@ public class ShooterControl {
     }
 
     public void aimAndSpinSOTM() {
-        Pose2d goalPos = RobotConstants.RobotLocalization.goalPos;
+        Pose2d goalPos = new Pose2d(0, 0, 0);
+        if (robot.currentTeam == RobotHardware.Team.RED) {
+            goalPos = RobotConstants.RobotLocalization.redGoalPos;
+        } else if (robot.currentTeam == RobotHardware.Team.BLUE) {
+            goalPos = RobotConstants.RobotLocalization.blueGoalPos;
+        }
         goalPos = new Pose2d(
                 goalPos.position.x + goalXOffset,
                 goalPos.position.y + goalYOffset,
@@ -116,7 +121,12 @@ public class ShooterControl {
     }
 
     public double findDistanceToGoal() {
-        Pose2d goalPos = RobotConstants.RobotLocalization.goalPos;
+        Pose2d goalPos = new Pose2d(0, 0, 0);
+        if (robot.currentTeam == RobotHardware.Team.RED) {
+            goalPos = RobotConstants.RobotLocalization.redGoalPos;
+        } else if (robot.currentTeam == RobotHardware.Team.BLUE) {
+            goalPos = RobotConstants.RobotLocalization.blueGoalPos;
+        }
         goalPos = new Pose2d(goalPos.position.x + goalXOffset, goalPos.position.y + goalYOffset, goalPos.heading.real);
         Pose2d robotPose = robot.robotLocalization.getRobotPose();
 
@@ -127,7 +137,12 @@ public class ShooterControl {
     }
 
     public double findTurretToGoal() {
-        Pose2d goalPos = RobotConstants.RobotLocalization.goalPos;
+        Pose2d goalPos = new Pose2d(0, 0, 0);
+        if (robot.currentTeam == RobotHardware.Team.RED) {
+            goalPos = RobotConstants.RobotLocalization.redGoalPos;
+        } else if (robot.currentTeam == RobotHardware.Team.BLUE) {
+            goalPos = RobotConstants.RobotLocalization.blueGoalPos;
+        }
         Pose2d robotPose = robot.robotLocalization.getRobotPose();
 
         double dx = goalPos.position.x - robotPose.position.x;

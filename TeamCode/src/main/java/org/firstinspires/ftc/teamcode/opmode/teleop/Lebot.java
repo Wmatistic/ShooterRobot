@@ -4,21 +4,21 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.commands.subsystemcommand.IndexerArmCommand;
+import org.firstinspires.ftc.teamcode.commands.teleopcommand.FourBallShuffle;
 import org.firstinspires.ftc.teamcode.commands.teleopcommand.TransferBallCommand;
 import org.firstinspires.ftc.teamcode.subsystem.Indexer;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 import org.firstinspires.ftc.teamcode.util.RobotConstants;
 import org.firstinspires.ftc.teamcode.util.RobotHardware;
-import org.firstinspires.ftc.teamcode.util.RobotLocalization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,17 +64,14 @@ public class Lebot extends CommandOpMode {
         telemetry.addData("Turret Target: ", robot.shooter.getTurretTarget());
         telemetry.addData("Distance to Goal: ", robot.shooter.shooterControl.findDistanceToGoal());
         telemetry.addData("Ball Count: ", robot.indexer.getBallCount());
-        telemetry.addData("Goal X: ", RobotConstants.RobotLocalization.goalPos.position.x + robot.shooter.shooterControl.getGoalXOffset());
-        telemetry.addData("Goal Y: ", RobotConstants.RobotLocalization.goalPos.position.y + robot.shooter.shooterControl.getGoalYOffset());
+        telemetry.addData("Goal X: ", RobotConstants.RobotLocalization.redGoalPos.position.x + robot.shooter.shooterControl.getGoalXOffset());
+        telemetry.addData("Goal Y: ", RobotConstants.RobotLocalization.redGoalPos.position.y + robot.shooter.shooterControl.getGoalYOffset());
 //        telemetry.addData("Limelight Pose Position: ", robot.robotLocalization.getLimelightPose().position.toString());
 //        telemetry.addData("Limelight Pose Heading: ", ((360 - (-1 * robot.limelight.getLatestResult().getBotpose().getOrientation().getYaw(AngleUnit.DEGREES))) % 360) - 180);
 //        telemetry.addData("Pinpoint Pose Position: ", robot.pinpointDrive.pinpoint.getPositionRR().position.toString());
 //        telemetry.addData("Pinpoint Pose Heading: ", Math.toDegrees(robot.pinpointDrive.pinpoint.getHeading()));
         telemetry.update();
 
-//        if (driver.wasJustPressed(GamepadKeys.Button.Y)) {
-//            robot.robotLocalization.setPinpointPose(RobotConstants.RobotLocalization.blueHumanPlayer);
-//        }
 
         if (driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
             robot.shooter.setShooterState(Shooter.ShooterState.FULL_SPEED);
@@ -83,17 +80,41 @@ public class Lebot extends CommandOpMode {
             robot.shooter.setShooterState(Shooter.ShooterState.HUMAN_PLAYER);
         }
 
-        if (driver.wasJustPressed(GamepadKeys.Button.A)) {
-            robot.shooter.shooterControl.changeGoalXOffset(-0.5);
+        if (driver.wasJustPressed(GamepadKeys.Button.BACK)) {
+            if (robot.shooter.getShooterState() == Shooter.ShooterState.DEBUG)
+                robot.shooter.setShooterState(Shooter.ShooterState.STOWED);
+            else {
+                robot.shooter.setShooterState(Shooter.ShooterState.DEBUG);
+            }
         }
-        if (driver.wasJustPressed(GamepadKeys.Button.Y)) {
-            robot.shooter.shooterControl.changeGoalXOffset(0.5);
-        }
-        if (driver.wasJustPressed(GamepadKeys.Button.B)) {
-            robot.shooter.shooterControl.changeGoalYOffset(-0.5);
-        }
-        if (driver.wasJustPressed(GamepadKeys.Button.X)) {
-            robot.shooter.shooterControl.changeGoalYOffset(0.5);
+
+        if (robot.shooter.getShooterState() == Shooter.ShooterState.DEBUG) {
+            if (driver.wasJustPressed(GamepadKeys.Button.A)) {
+                robot.shooter.changeFarShotHood(-0.1);
+            }
+            if (driver.wasJustPressed(GamepadKeys.Button.Y)) {
+                robot.shooter.changeFarShotHood(0.1);
+            }
+
+            if (driver.wasJustPressed(GamepadKeys.Button.B)) {
+                robot.shooter.changeFarShotRPM(0.01);
+            }
+            if (driver.wasJustPressed(GamepadKeys.Button.X)) {
+                robot.shooter.changeFarShotRPM(-0.01);
+            }
+        } else {
+            if (driver.wasJustPressed(GamepadKeys.Button.A)) {
+                robot.shooter.shooterControl.changeGoalXOffset(-0.5);
+            }
+            if (driver.wasJustPressed(GamepadKeys.Button.Y)) {
+                robot.shooter.shooterControl.changeGoalXOffset(0.5);
+            }
+            if (driver.wasJustPressed(GamepadKeys.Button.B)) {
+                robot.shooter.shooterControl.changeGoalYOffset(-0.5);
+            }
+            if (driver.wasJustPressed(GamepadKeys.Button.X)) {
+                robot.shooter.shooterControl.changeGoalYOffset(0.5);
+            }
         }
 
         if (driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
@@ -108,30 +129,17 @@ public class Lebot extends CommandOpMode {
             robot.robotLocalization.relocalizePinpointWithLimelight();
         }
 
-//        if (driver.wasJustPressed(GamepadKeys.Button.A)) {
-//            robot.shooter.changeFarShotHood(-0.1);
-//        }
-//        if (driver.wasJustPressed(GamepadKeys.Button.Y)) {
-//            robot.shooter.changeFarShotHood(0.1);
-//        }
-//
-//        if (driver.wasJustPressed(GamepadKeys.Button.B)) {
-//            robot.shooter.changeFarShotRPM(0.01);
-//        }
-//        if (driver.wasJustPressed(GamepadKeys.Button.X)) {
-//            robot.shooter.changeFarShotRPM(-0.01);
-//        }
+        if (driver.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) {
+            robot.changeTeam();
+        }
 
-//        if (driver.isDown(GamepadKeys.Button.B)) {
-//            robot.shooter.setFlywheelVelocity(RobotConstants.Shooter.farShotRPM);
-//        } else {
-//            robot.shooter.setFlywheelVelocity(0);
-//        }
-
-        if (driver.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
+        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.2) {
             robot.intake.setIntake(Intake.IntakeState.INTAKING);
-        } else if (driver.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
+        } else if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.2) {
             robot.intake.setIntake(Intake.IntakeState.REVERSED);
+            CommandScheduler.getInstance().schedule(
+                    new FourBallShuffle()
+            );
         } else {
             robot.intake.setIntake(Intake.IntakeState.STOWED);
         }
@@ -152,18 +160,81 @@ public class Lebot extends CommandOpMode {
 //            );
 //        }
 
+        /*
         if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.2 && (robot.shooter.getShooterState() == Shooter.ShooterState.AIMING || robot.shooter.getShooterState() == Shooter.ShooterState.FULL_SPEED)) {
+
+            List<Indexer.SlotID> slotOrder = Arrays.asList(
+                    Indexer.SlotID.MIDDLE,
+                    Indexer.SlotID.REAR,
+                    Indexer.SlotID.FRONT
+            );
+
+            int[] startOffsetsMs = new int[] { RobotConstants.Indexer.firstStartOffset, RobotConstants.Indexer.secondStartOffset, RobotConstants.Indexer.thirdStartOffset };
+
+            List<Indexer.SlotID> occupied = new ArrayList<>();
+            for (Indexer.SlotID slot : slotOrder) {
+                if (robot.indexer.getIndexerSlot(slot).occupied) {
+                    occupied.add(slot);
+                }
+            }
+
+            if (!occupied.isEmpty()) {
+                ParallelCommandGroup burst = new ParallelCommandGroup();
+
+                int shots = Math.min(occupied.size(), startOffsetsMs.length);
+                for (int i = 0; i < shots; i++) {
+                    Indexer.SlotID slot = occupied.get(i);
+                    int offset = startOffsetsMs[i];
+
+                    burst.addCommands(
+                            new SequentialCommandGroup(
+                                    new WaitCommand(offset),
+                                    new IndexerArmCommand(slot, RobotHardware.getInstance().indexer.getIndexerServoUpPosition(slot)),
+                                    new WaitCommand(RobotConstants.Indexer.armHoldMs),
+                                    new IndexerArmCommand(slot, RobotConstants.Indexer.indexerServoCorral)
+                            )
+                    );
+                }
+
+                CommandScheduler.getInstance().schedule(
+                        new SequentialCommandGroup(
+                                burst,
+                                new ParallelCommandGroup(
+                                        new IndexerArmCommand(Indexer.SlotID.MIDDLE, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.MIDDLE)),
+                                        new IndexerArmCommand(Indexer.SlotID.REAR, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.REAR)),
+                                        new IndexerArmCommand(Indexer.SlotID.FRONT, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.FRONT))
+                                )
+                        )
+                );
+            }
+        }
+         */
+
+
+
+
+        if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) && (robot.shooter.getShooterState() == Shooter.ShooterState.AIMING || robot.shooter.getShooterState() == Shooter.ShooterState.FULL_SPEED)) {
             List<Boolean> occupiedList = new ArrayList<Boolean>();
             occupiedList.add(robot.indexer.getIndexerSlot(Indexer.SlotID.FRONT).occupied);
             occupiedList.add(robot.indexer.getIndexerSlot(Indexer.SlotID.MIDDLE).occupied);
             occupiedList.add(robot.indexer.getIndexerSlot(Indexer.SlotID.REAR).occupied);
+//
+//            if (!robot.indexer.getIndexerSlot(Indexer.SlotID.MIDDLE).occupied) {
+//                robot.indexer.moveIndexerSlotServo(Indexer.SlotID.MIDDLE, RobotConstants.Indexer.indexerServoCorral);
+//            }
+//            if (!robot.indexer.getIndexerSlot(Indexer.SlotID.REAR).occupied) {
+//                robot.indexer.moveIndexerSlotServo(Indexer.SlotID.REAR, RobotConstants.Indexer.indexerServoCorral);
+//            }
+//            if (!robot.indexer.getIndexerSlot(Indexer.SlotID.FRONT).occupied) {
+//                robot.indexer.moveIndexerSlotServo(Indexer.SlotID.FRONT, RobotConstants.Indexer.indexerServoCorral);
+//            }
 
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
                             new ConditionalCommand(
                                     new SequentialCommandGroup(
-                                            new TransferBallCommand(Indexer.SlotID.FRONT),
-                                            new WaitCommand(120)
+                                            new TransferBallCommand(Indexer.SlotID.FRONT)
+                                            //new WaitCommand(0)
                                     ),
                                     new InstantCommand(),
                                     () -> occupiedList.get(0)
@@ -171,8 +242,8 @@ public class Lebot extends CommandOpMode {
 
                             new ConditionalCommand(
                                     new SequentialCommandGroup(
-                                            new TransferBallCommand(Indexer.SlotID.MIDDLE),
-                                            new WaitCommand(120)
+                                            new TransferBallCommand(Indexer.SlotID.MIDDLE)
+                                            //new WaitCommand(50)
                                     ),
                                     new InstantCommand(),
                                     () -> occupiedList.get(1)
@@ -184,8 +255,48 @@ public class Lebot extends CommandOpMode {
                                     ),
                                     new InstantCommand(),
                                     () -> occupiedList.get(2)
+                            ),
+
+                            new ParallelCommandGroup(
+                                    new IndexerArmCommand(Indexer.SlotID.FRONT, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.MIDDLE)),
+                                    new IndexerArmCommand(Indexer.SlotID.MIDDLE, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.REAR)),
+                                    new IndexerArmCommand(Indexer.SlotID.REAR, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.FRONT))
                             )
                     )
+
+//                    new ParallelCommandGroup(
+//                            new ConditionalCommand(
+//                                    new SequentialCommandGroup(
+//                                            new IndexerArmCommand(Indexer.SlotID.MIDDLE, RobotHardware.getInstance().indexer.getIndexerServoUpPosition(Indexer.SlotID.MIDDLE)),
+//                                            new WaitCommand(160),
+//                                            new IndexerArmCommand(Indexer.SlotID.MIDDLE, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.MIDDLE))
+//                                    ),
+//                                    new InstantCommand(),
+//                                    () -> occupiedList.get(0)
+//                            ),
+//
+//                            new ConditionalCommand(
+//                                    new SequentialCommandGroup(
+//                                            new WaitCommand(140),
+//                                            new IndexerArmCommand(Indexer.SlotID.REAR, RobotHardware.getInstance().indexer.getIndexerServoUpPosition(Indexer.SlotID.REAR)),
+//                                            new WaitCommand(160),
+//                                            new IndexerArmCommand(Indexer.SlotID.REAR, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.REAR))
+//                                    ),
+//                                    new InstantCommand(),
+//                                    () -> occupiedList.get(1)
+//                            ),
+//
+//                            new ConditionalCommand(
+//                                    new SequentialCommandGroup(
+//                                            new WaitCommand(460),
+//                                            new IndexerArmCommand(Indexer.SlotID.FRONT, RobotHardware.getInstance().indexer.getIndexerServoUpPosition(Indexer.SlotID.FRONT)),
+//                                            new WaitCommand(160),
+//                                            new IndexerArmCommand(Indexer.SlotID.FRONT, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.FRONT))
+//                                    ),
+//                                    new InstantCommand(),
+//                                    () -> occupiedList.get(2)
+//                            )
+//                    )
             );
         }
     }

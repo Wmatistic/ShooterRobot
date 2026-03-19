@@ -57,6 +57,12 @@ public class RobotHardware {
     public Intake intake;
     public Indexer indexer;
 
+    public enum Team {
+        RED, BLUE
+    }
+
+    public Team currentTeam;
+
     private HardwareMap hardwareMap;
     private static RobotHardware instance = null;
     private boolean enabled;
@@ -71,6 +77,8 @@ public class RobotHardware {
 
     public void init(final HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
+
+        currentTeam = Team.RED;
 
         // ******************* DRIVETRAIN *******************
         leftFront = hardwareMap.get(DcMotorEx.class, RobotConstants.Drivetrain.leftFront);
@@ -103,8 +111,8 @@ public class RobotHardware {
         shooterRight.setInverted(true);
 
         flywheel = new MotorGroup(
-            shooterRight,
-            shooterLeft
+            shooterLeft,
+            shooterRight
         );
 
         flywheel.setRunMode(Motor.RunMode.VelocityControl);
@@ -183,5 +191,13 @@ public class RobotHardware {
     public void autoPeriodic() {
         robotLocalization.periodic();
         shooter.periodic();
+    }
+
+    public void changeTeam() {
+        if (currentTeam == Team.BLUE) {
+            currentTeam = Team.RED;
+        } else if (currentTeam == Team.RED) {
+            currentTeam = Team.BLUE;
+        }
     }
 }

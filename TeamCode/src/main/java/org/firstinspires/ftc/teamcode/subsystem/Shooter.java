@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.util.RobotConstants;
 import org.firstinspires.ftc.teamcode.util.RobotHardware;
@@ -13,7 +14,7 @@ public class Shooter implements Subsystem {
 
     private ShooterState shooterState;
     public enum ShooterState {
-        STOWED, AIMING, FIRING, FULL_SPEED, HUMAN_PLAYER
+        STOWED, AIMING, FIRING, FULL_SPEED, HUMAN_PLAYER, DEBUG
     }
 
     private double turretTarget;
@@ -57,8 +58,8 @@ public class Shooter implements Subsystem {
                 updateTurret();
                 break;
             case FULL_SPEED:
-                robot.flywheel.set(1.0);
-                setHoodPosition(RobotConstants.Shooter.hoodMaxAngle);
+                robot.flywheel.set(RobotConstants.Shooter.flywheelFullSpeed);
+                setHoodPosition(RobotConstants.Shooter.hoodFullSpeed);
                 setTurretTarget(RobotConstants.Shooter.turretStowed);
                 updateTurret();
                 break;
@@ -68,6 +69,13 @@ public class Shooter implements Subsystem {
                 setTurretTarget(RobotConstants.Shooter.turretStowed);
                 updateTurret();
                  break;
+            case DEBUG:
+                setTurretTarget(shooterControl.findTurretToGoal());
+                setHoodPosition(localFarShotHood);
+                setFlywheelVelocity(localFarShotRPM);
+
+                updateTurret();
+                break;
         }
     }
 

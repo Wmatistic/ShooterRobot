@@ -29,10 +29,12 @@ public class RobotConstants {
 
         public static double flywheelHumanPlayer = -0.3;
 
+        public static double flywheelFullSpeed = 1.0;
+
         public static double TICKS_PER_REV = 537.7;
 
-        public static double turretStowed = 0.54;
-        public static double turretOffset = 0.04;
+        public static double turretStowed = 0.50;
+        public static double turretOffset = 0.0;
         public static double turretBasePower = 0.25;
 
         public static double turretP = 10.0;
@@ -46,6 +48,7 @@ public class RobotConstants {
         public static double hoodStowed = 0.0;
         public static double hoodMinAngle = 0.0;
         public static double hoodMaxAngle = 0.9;
+        public static double hoodFullSpeed = 0.3;
 
         public static int farShotRPM = 1400;
         public static double farShotHood = 0.8;
@@ -84,16 +87,24 @@ public class RobotConstants {
         public static String middleServo = "middleServo";
         public static String rearServo = "rearServo";
 
-        public static double proximityThreshold = 10.0;
+        public static double proximityThreshold = 20.0;
 
         public static double indexerServoStowed = 0.1;
         public static double frontIndexerServoStowed = 0.01;
-        public static double middleIndexerServoStowed = 0.09;
-        public static double rearIndexerServoStowed = 0.068;
-        public static double indexerServoUp = 0.5;
+        public static double middleIndexerServoStowed = 0.035;
+        public static double rearIndexerServoStowed = 0.03;
+        public static double indexerServoUp = 0.53;
         public static double frontIndexerServoUp = 0.5;
         public static double middleIndexerServoUp = 0.6;
-        public static double rearIndexerServoUp = 0.4;
+        public static double rearIndexerServoUp = 0.55;
+        public static double rearServoShuffle = 0.2;
+
+        public static double indexerServoCorral = 0.25;
+
+        public static int armHoldMs = 170;
+        public static int firstStartOffset = 0;
+        public static int secondStartOffset = 140;
+        public static int thirdStartOffset = 460;
     }
 
     @Config
@@ -103,6 +114,7 @@ public class RobotConstants {
 
         public static Pose2d blueHumanPlayer = new Pose2d(-63, 63, Math.toRadians(0));
 
-        public static Pose2d goalPos = new Pose2d(66, 66, 0);
+        public static Pose2d redGoalPos = new Pose2d(66, -69, 0);
+        public static Pose2d blueGoalPos = new Pose2d(66, 69, 0);
     }
 }

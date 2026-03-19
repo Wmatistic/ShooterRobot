@@ -27,7 +27,7 @@ public class Drivetrain implements Subsystem {
         x = driver.getLeftX() * 1.2;
         rx = driver.getRightX() * 1.1;
 
-        heading = robot.robotLocalization.getRobotPose().heading.log();
+        heading = robot.robotLocalization.getRobotPose().heading.log() + Math.toRadians(0);
         double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
         double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
 
