@@ -29,6 +29,8 @@ public class Lebot extends CommandOpMode {
     private final RobotHardware robot = RobotHardware.getInstance();
     private GamepadEx driver, operator;
 
+    private boolean transferActive;
+
     @Override
     public void initialize() {
         CommandScheduler.getInstance().reset();
@@ -42,6 +44,8 @@ public class Lebot extends CommandOpMode {
         robot.robotLocalization.setPinpointPose(RobotConstants.RobotLocalization.start);
 
         robot.limelight.start();
+
+        transferActive = false;
     }
 
     @Override
@@ -133,7 +137,7 @@ public class Lebot extends CommandOpMode {
             robot.changeTeam();
         }
 
-        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.2) {
+        if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
             robot.intake.setIntake(Intake.IntakeState.INTAKING);
         } else if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.2) {
             robot.intake.setIntake(Intake.IntakeState.REVERSED);
@@ -213,7 +217,9 @@ public class Lebot extends CommandOpMode {
 
 
 
-        if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) && (robot.shooter.getShooterState() == Shooter.ShooterState.AIMING || robot.shooter.getShooterState() == Shooter.ShooterState.FULL_SPEED)) {
+        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.2 && !transferActive && (robot.shooter.getShooterState() == Shooter.ShooterState.AIMING || robot.shooter.getShooterState() == Shooter.ShooterState.FULL_SPEED)) {
+            transferActive = true;
+
             List<Boolean> occupiedList = new ArrayList<Boolean>();
             occupiedList.add(robot.indexer.getIndexerSlot(Indexer.SlotID.FRONT).occupied);
             occupiedList.add(robot.indexer.getIndexerSlot(Indexer.SlotID.MIDDLE).occupied);
@@ -261,7 +267,9 @@ public class Lebot extends CommandOpMode {
                                     new IndexerArmCommand(Indexer.SlotID.FRONT, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.MIDDLE)),
                                     new IndexerArmCommand(Indexer.SlotID.MIDDLE, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.REAR)),
                                     new IndexerArmCommand(Indexer.SlotID.REAR, RobotHardware.getInstance().indexer.getIndexerServoStowedPosition(Indexer.SlotID.FRONT))
-                            )
+                            ),
+
+                            new InstantCommand( () -> transferActive = false)
                     )
 
 //                    new ParallelCommandGroup(
