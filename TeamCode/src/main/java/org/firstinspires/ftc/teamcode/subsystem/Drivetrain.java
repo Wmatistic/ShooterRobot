@@ -31,15 +31,15 @@ public class Drivetrain implements Subsystem {
         double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
         double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
 
-        leftFrontPower = (rotY + rotX + rx);
-        leftRearPower = (rotY - rotX + rx);
-        rightFrontPower = (rotY - rotX - rx);
-        rightRearPower = (rotY + rotX - rx);
+//        leftFrontPower = (rotY + rotX + rx);
+//        leftRearPower = (rotY - rotX + rx);
+//        rightFrontPower = (rotY - rotX - rx);
+//        rightRearPower = (rotY + rotX - rx);
 
-//        leftFrontPower = (y + x + rx);
-//        leftRearPower = (y - x + rx);
-//        rightFrontPower = (y - x - rx);
-//        rightRearPower = (y + x - rx);
+        leftFrontPower = (y + x + rx);
+        leftRearPower = (y - x + rx);
+        rightFrontPower = (y - x - rx);
+        rightRearPower = (y + x - rx);
 
 
         robot.leftFront.setPower(leftFrontPower);

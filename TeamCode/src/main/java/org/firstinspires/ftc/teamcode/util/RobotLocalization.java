@@ -24,8 +24,8 @@ public class RobotLocalization {
     public RobotLocalization() {
         this.robot = RobotHardware.getInstance();
 
-        limeLightPose = new Pose2d(0, 0, 0);
-        robotPose = new Pose2d(0, 0, 0);
+        limeLightPose = RobotConstants.RobotLocalization.start;
+        robotPose = RobotConstants.RobotLocalization.start;
         pinpointPose = RobotConstants.RobotLocalization.start;
         setPinpointPose(RobotConstants.RobotLocalization.start);
     }

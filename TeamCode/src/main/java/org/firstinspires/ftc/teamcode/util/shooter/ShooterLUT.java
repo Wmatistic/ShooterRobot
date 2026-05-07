@@ -8,13 +8,12 @@ public class ShooterLUT {
     private final TreeMap<Double, ShotConfig> table = new TreeMap<>();
 
     public ShooterLUT() {
-        // TODO: add / tune values
         // distance, rpm, hood servo position, turret offset
 
         // OLD SHOOTER TABLE
         table.put(170.0, new ShotConfig(.71, 0.8, 0.0));
-        table.put(137.0, new ShotConfig(.63, 0.8, 0.0));
-        table.put(93.0, new ShotConfig(.54, 0.8, 0.0));
+        table.put(137.0, new ShotConfig(.6, 0.8, 0.0));
+        table.put(93.0, new ShotConfig(.5, 0.8, 0.0));
         table.put(75.0, new ShotConfig(.48, 0.6, 0.0));
         table.put(27.0, new ShotConfig(.4, 0.1, 0.0));
 

@@ -29,7 +29,7 @@ public class Lebot extends CommandOpMode {
     private final RobotHardware robot = RobotHardware.getInstance();
     private GamepadEx driver, operator;
 
-    private boolean transferActive;
+    private boolean transferActive, hasRumbled;
 
     @Override
     public void initialize() {
@@ -75,7 +75,6 @@ public class Lebot extends CommandOpMode {
 //        telemetry.addData("Pinpoint Pose Position: ", robot.pinpointDrive.pinpoint.getPositionRR().position.toString());
 //        telemetry.addData("Pinpoint Pose Heading: ", Math.toDegrees(robot.pinpointDrive.pinpoint.getHeading()));
         telemetry.update();
-
 
         if (driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
             robot.shooter.setShooterState(Shooter.ShooterState.FULL_SPEED);
@@ -137,9 +136,9 @@ public class Lebot extends CommandOpMode {
             robot.changeTeam();
         }
 
-        if (driver.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
+        if (driver.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
             robot.intake.setIntake(Intake.IntakeState.INTAKING);
-        } else if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.2) {
+        } else if (driver.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
             robot.intake.setIntake(Intake.IntakeState.REVERSED);
             CommandScheduler.getInstance().schedule(
                     new FourBallShuffle()
@@ -217,7 +216,7 @@ public class Lebot extends CommandOpMode {
 
 
 
-        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.2 && !transferActive && (robot.shooter.getShooterState() == Shooter.ShooterState.AIMING || robot.shooter.getShooterState() == Shooter.ShooterState.FULL_SPEED)) {
+        if (driver.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.2 && !transferActive && (robot.shooter.getShooterState() == Shooter.ShooterState.AIMING || robot.shooter.getShooterState() == Shooter.ShooterState.FULL_SPEED || robot.shooter.getShooterState() == Shooter.ShooterState.DEBUG)) {
             transferActive = true;
 
             List<Boolean> occupiedList = new ArrayList<Boolean>();
